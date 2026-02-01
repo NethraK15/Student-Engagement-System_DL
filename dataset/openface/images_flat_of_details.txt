@@ -1,0 +1,13 @@
+Input:D:\Amrita\Final_Year_Project\Sem_6 Work\Student_Engagement_DL\dataset\images_flat
+Input full path:D:\Amrita\Final_Year_Project\Sem_6 Work\Student_Engagement_DL\dataset\images_flat
+Camera parameters:91.1458,91.1458,50,50
+Output HOG:images_flat.hog
+Output video:images_flat.avi
+Output aligned directory:images_flat_aligned
+Output csv:images_flat.csv
+Gaze: 1
+AUs: 1
+Landmarks 2D: 1
+Landmarks 3D: 1
+Pose: 1
+Shape parameters: 1
