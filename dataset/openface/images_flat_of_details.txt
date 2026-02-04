@@ -1,5 +1,5 @@
-Input:D:\Amrita\Final_Year_Project\Sem_6 Work\Student_Engagement_DL\dataset\images_flat
-Input full path:D:\Amrita\Final_Year_Project\Sem_6 Work\Student_Engagement_DL\dataset\images_flat
+Input:D:\FINAL YEAR PROJECT-1\FYP\student_engagement_2\Student-Engagement-System_DL\dataset\images_flat
+Input full path:D:\FINAL YEAR PROJECT-1\FYP\student_engagement_2\Student-Engagement-System_DL\dataset\images_flat
 Camera parameters:91.1458,91.1458,50,50
 Output HOG:images_flat.hog
 Output video:images_flat.avi

@@ -2,6 +2,9 @@ import cv2
 import mediapipe as mp
 import os
 import pandas as pd
+import mediapipe as mp
+print(mp.__file__)
+exit()
 
 class EngagementFeatureExtractor:
     def __init__(self):

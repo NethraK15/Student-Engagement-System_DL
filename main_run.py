@@ -18,6 +18,9 @@ FOLDERS = {
 }
 
 def main():
+    print("BASE_PATH:", BASE_PATH)
+    print("OUTPUT_PATH:", OUTPUT_PATH)
+
     if not os.path.exists(OUTPUT_PATH):
         os.makedirs(OUTPUT_PATH)
 
@@ -26,8 +29,17 @@ def main():
 
     for folder_name, label_id in FOLDERS.items():
         folder_full_path = os.path.join(BASE_PATH, folder_name)
+        print(f"\nChecking folder: {folder_full_path}")
+        print("Exists:", os.path.exists(folder_full_path))
+
+        if os.path.exists(folder_full_path):
+            print("Files:", os.listdir(folder_full_path))
+
         folder_results = extractor.extract_from_folder(folder_full_path, label_id)
+        print("Extracted rows:", len(folder_results))
+
         master_data.extend(folder_results)
+
 
     # Creating the final DataFrame
     if master_data:

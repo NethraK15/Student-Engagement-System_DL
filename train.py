@@ -47,7 +47,7 @@ optimizer = torch.optim.Adam(
     lr=0.0001
 )
 
-epochs = 1
+epochs = 10
 
 # ---------- TRAIN ----------
 for epoch in range(epochs):
@@ -75,5 +75,5 @@ for epoch in range(epochs):
     print(f"Epoch {epoch+1}/{epochs} | Avg Loss: {total_loss/len(loader):.4f}")
 
 # ---------- SAVE ----------
-torch.save(model.state_dict(), "models/engagement_fusion1.pth")
+torch.save(model.state_dict(), "models/engagement_fusion3.pth")
 print(">>> Training complete")

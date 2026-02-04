@@ -24,7 +24,7 @@ print(f"OpenFace feature dim: {openface_dim}")
 
 # 4️⃣ Load model
 model = FusionModel(openface_dim=openface_dim).to(device)
-model.load_state_dict(torch.load("models/engagement_fusion1.pth", map_location=device))
+model.load_state_dict(torch.load("models/engagement_fusion3.pth", map_location=device))
 model.eval()
 print("Model loaded and ready for evaluation.")
 
