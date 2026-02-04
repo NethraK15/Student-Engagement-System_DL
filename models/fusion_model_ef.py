@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 from torchvision import models
 
-class FusionModel(nn.Module):
+class FusionModel1(nn.Module):
     def __init__(self, openface_dim, num_classes=3):
-        super(FusionModel, self).__init__()
+        super(FusionModel1, self).__init__()
 
         # ----- CNN BRANCH (EfficientNet) -----
         self.cnn = models.efficientnet_b0(pretrained=True)
