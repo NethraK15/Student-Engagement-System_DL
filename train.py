@@ -1,62 +1,86 @@
 import torch
+import torch.nn as nn
 from torch.utils.data import DataLoader
-from dataset import EngagementDataset
-from models.fusion_model import FusionModel
+from sklearn.model_selection import train_test_split
 
-# ---------- FORCE CPU (IMPORTANT FOR DEBUG) ----------
-device = torch.device("cpu")
+from dataset import EngagementDataset
+from models.fusion_model_attention import AdaptiveAttentionFusion as FusionModel
+
+# ===============================
+# 1️⃣ Device setup
+# ===============================
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(">>> Using device:", device)
 
-# ---------- LOAD DATASET ----------
-print(">>> Loading dataset...")
-dataset = EngagementDataset(
+# ===============================
+# 2️⃣ Load FULL dataset (for splitting)
+# ===============================
+full_dataset = EngagementDataset(
     feature_csv="dataset/openface/images_flat.csv",
     label_csv="dataset/labels.csv",
     images_dir="dataset/images_flat"
 )
-print(f">>> Dataset loaded with {len(dataset)} samples")
 
-# ---------- DATALOADER (SAFE SETTINGS) ----------
-loader = DataLoader(
-    dataset,
-    batch_size=4,        # VERY IMPORTANT
+print(f">>> Full dataset size: {len(full_dataset)}")
+
+# ===============================
+# 3️⃣ Train / Test split (80 / 20)
+# ===============================
+indices = list(range(len(full_dataset)))
+train_idx, test_idx = train_test_split(
+    indices, test_size=0.2, random_state=42, shuffle=True
+)
+
+train_dataset = EngagementDataset(
+    feature_csv="dataset/openface/images_flat.csv",
+    label_csv="dataset/labels.csv",
+    images_dir="dataset/images_flat",
+    indices=train_idx
+)
+
+print(f">>> Training samples: {len(train_dataset)}")
+
+# ===============================
+# 4️⃣ DataLoader
+# ===============================
+train_loader = DataLoader(
+    train_dataset,
+    batch_size=16,
     shuffle=True,
-    num_workers=0,       # WINDOWS SAFE
-    pin_memory=False
+    num_workers=0
 )
-print(">>> DataLoader created")
 
-# ---------- OPENFACE DIM ----------
-_, openface_sample, _ = dataset[0]
+# ===============================
+# 5️⃣ Get OpenFace feature dimension
+# ===============================
+_, openface_sample, _ = train_dataset[0]
 openface_dim = openface_sample.shape[0]
-print(">>> OpenFace feature dimension:", openface_dim)
+print(f">>> OpenFace feature dimension: {openface_dim}")
 
-# ---------- MODEL ----------
-print(">>> Initializing model...")
+# ===============================
+# 6️⃣ Initialize model
+# ===============================
 model = FusionModel(openface_dim=openface_dim).to(device)
+print(">>> Model initialized")
 
-# FREEZE CNN (CRITICAL)
-for param in model.cnn.parameters():
-    param.requires_grad = False
-print(">>> CNN frozen")
+# ===============================
+# 7️⃣ Loss and optimizer
+# ===============================
+criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 
-# ---------- LOSS + OPTIMIZER ----------
-criterion = torch.nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(
-    filter(lambda p: p.requires_grad, model.parameters()),
-    lr=0.0001
-)
+# ===============================
+# 8️⃣ Training loop
+# ===============================
+epochs = 10
 
-epochs = 1
-
-# ---------- TRAIN ----------
 for epoch in range(epochs):
     model.train()
-    total_loss = 0
+    running_loss = 0.0
 
-    print(f">>> Epoch {epoch+1} started")
+    print(f"\n>>> Epoch {epoch + 1}/{epochs} started")
 
-    for batch_idx, (images, openface_feats, labels) in enumerate(loader):
+    for batch_idx, (images, openface_feats, labels) in enumerate(train_loader):
         images = images.to(device)
         openface_feats = openface_feats.to(device)
         labels = labels.to(device)
@@ -67,13 +91,18 @@ for epoch in range(epochs):
         loss.backward()
         optimizer.step()
 
-        total_loss += loss.item()
+        running_loss += loss.item()
 
-        if batch_idx % 10 == 0:
-            print(f"    Batch {batch_idx} | Loss {loss.item():.4f}")
+        if batch_idx % 20 == 0:
+            print(f"Batch {batch_idx} | Loss: {loss.item():.4f}")
 
-    print(f"Epoch {epoch+1}/{epochs} | Avg Loss: {total_loss/len(loader):.4f}")
+    avg_loss = running_loss / len(train_loader)
+    print(f">>> Epoch {epoch + 1} completed | Avg Loss: {avg_loss:.4f}")
 
-# ---------- SAVE ----------
-torch.save(model.state_dict(), "models/engagement_fusion1.pth")
-print(">>> Training complete")
+# ===============================
+# 9️⃣ Save trained model
+# ===============================
+save_path = "models/engagement_fusion_attention.pth"
+torch.save(model.state_dict(), save_path)
+print(f"\n>>> Training complete")
+print(f">>> Model saved to {save_path}")
