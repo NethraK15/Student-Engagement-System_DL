@@ -2,8 +2,9 @@
 __pycache__/
 *.pyc
 
-# Virtual environment
+# Virtual environments
 venv/
+.env
 
 # Model weights
 *.pth

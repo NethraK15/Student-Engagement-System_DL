@@ -1,0 +1,17 @@
+﻿# MediaPipe & Image Processing
+mediapipe==0.10.11
+opencv-contrib-python
+protobuf
+
+# Deep Learning (PyTorch & Vision)
+torch
+torchvision
+
+# Data Science & Progress bars
+pandas
+numpy
+tqdm
+
+# Machine Learning & Evaluation
+scikit-learn
+xgboost
