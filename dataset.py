@@ -5,24 +5,40 @@ import os
 import cv2
 from torchvision import transforms
 
+
 class EngagementDataset(Dataset):
-    def __init__(self, feature_csv, label_csv, images_dir):
+    def __init__(self, feature_csv, label_csv, images_dir, indices=None):
+
+        # ===============================
+        # 1️⃣ Load CSV files
+        # ===============================
         self.features = pd.read_csv(feature_csv)
         self.labels = pd.read_csv(label_csv)
-
         self.images_dir = images_dir
 
-        # Map frame numbers to filenames based on sorted order of images
+        # ===============================
+        # 2️⃣ Map frame number → filename
+        # ===============================
         image_files = sorted(os.listdir(images_dir))
-        frame_to_filename = {i+1: image_files[i] for i in range(len(image_files))}
-        self.features['filename'] = self.features['frame'].map(frame_to_filename)
-        
-        # Merge using filename
+        frame_to_filename = {i + 1: image_files[i] for i in range(len(image_files))}
+        self.features["filename"] = self.features["frame"].map(frame_to_filename)
+
+        # ===============================
+        # 3️⃣ Merge features + labels
+        # ===============================
         self.data = self.features.merge(
             self.labels, on="filename", how="inner"
         )
 
-        # Image preprocessing for CNN
+        # ===============================
+        # 4️⃣ APPLY TRAIN / TEST SPLIT (KEY FIX)
+        # ===============================
+        if indices is not None:
+            self.data = self.data.iloc[indices].reset_index(drop=True)
+
+        # ===============================
+        # 5️⃣ Image preprocessing
+        # ===============================
         self.transform = transforms.Compose([
             transforms.ToPILImage(),
             transforms.Resize((224, 224)),
@@ -33,8 +49,14 @@ class EngagementDataset(Dataset):
             )
         ])
 
-        # OpenFace feature columns (exclude metadata columns)
-        metadata_cols = ["filename", "label", "frame", " face_id", " timestamp", " confidence", " success"]
+        # ===============================
+        # 6️⃣ OpenFace feature columns
+        # ===============================
+        metadata_cols = [
+            "filename", "label", "frame",
+            " face_id", " timestamp", " confidence", " success"
+        ]
+
         self.feature_cols = [
             col for col in self.data.columns
             if col not in metadata_cols
@@ -46,17 +68,23 @@ class EngagementDataset(Dataset):
     def __getitem__(self, idx):
         row = self.data.iloc[idx]
 
-        # ----- IMAGE -----
+        # ===============================
+        # IMAGE
+        # ===============================
         img_path = os.path.join(self.images_dir, row["filename"])
         image = cv2.imread(img_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image = self.transform(image)
 
-        # ----- OPENFACE FEATURES -----
-        openface_feat = row[self.feature_cols].values
-        openface_feat = openface_feat.astype(float)
+        # ===============================
+        # OpenFace FEATURES
+        # ===============================
+        openface_feat = row[self.feature_cols].values.astype(float)
         openface_feat = torch.tensor(openface_feat, dtype=torch.float32)
 
+        # ===============================
+        # LABEL
+        # ===============================
         label = torch.tensor(row["label"], dtype=torch.long)
 
         return image, openface_feat, label
