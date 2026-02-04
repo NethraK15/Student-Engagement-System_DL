@@ -39,7 +39,7 @@ optimizer = torch.optim.Adam(
     lr=1e-4
 )
 
-epochs = 1
+epochs = 10
 
 # ---------- TRAIN ----------
 for epoch in range(epochs):
