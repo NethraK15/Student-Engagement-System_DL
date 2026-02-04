@@ -6,7 +6,7 @@ import pandas as pd
 class EngagementFeatureExtractor:
     def __init__(self):
         # Initializing the FaceMesh solution
-        self.mp_face_mesh = meshmp.solutions.face_
+        self.mp_face_mesh = mp.solutions.face_mesh
         self.face_mesh = self.mp_face_mesh.FaceMesh(
             static_image_mode=True, 
             max_num_faces=1,
