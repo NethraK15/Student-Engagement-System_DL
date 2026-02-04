@@ -1,0 +1,22 @@
+# Datasets
+dataset/
+data/
+images/
+*.csv
+
+# Model weights
+*.pth
+*.pt
+
+# Python cache
+_pycache_/
+*.pyc
+
+#venv
+venv/
+
+# Colab
+*.ipynb_checkpoints
+
+# OS
+.DS_Store
