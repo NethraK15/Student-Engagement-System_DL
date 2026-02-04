@@ -14,11 +14,10 @@ _pycache_/
 
 #venv
 venv/
+.env
 
 # Colab
 *.ipynb_checkpoints
 
 # OS
 .DS_Store
-# Model weights
-*.pth
