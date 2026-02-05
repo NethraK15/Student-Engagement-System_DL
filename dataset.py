@@ -6,8 +6,13 @@ import cv2
 import numpy as np
 from torchvision import transforms
 
+
 class EngagementDataset(Dataset):
-    def __init__(self, feature_csv, label_csv, images_dir):
+    def __init__(self, feature_csv, label_csv, images_dir, indices=None):
+
+        # ===============================
+        # 1️⃣ Load CSV files
+        # ===============================
         self.features = pd.read_csv(feature_csv)
         self.labels = pd.read_csv(label_csv)
         self.images_dir = images_dir
