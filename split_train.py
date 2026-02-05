@@ -2,7 +2,7 @@ import torch
 from torch.utils.data import DataLoader, Subset
 from sklearn.model_selection import train_test_split
 from dataset import EngagementDataset
-from models.fusion_model_illum import FusionModel
+from models.fusion_model_eff import FusionModel
 
 # 1. Device setup
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -42,7 +42,7 @@ criterion = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=0.0001)
 
 # 6. Training Loop
-epochs = 5 # Increased slightly since we are splitting data
+epochs = 10 # Increased slightly since we are splitting data
 for epoch in range(epochs):
     model.train()
     total_loss = 0

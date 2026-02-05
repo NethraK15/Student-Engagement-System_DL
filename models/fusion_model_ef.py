@@ -34,3 +34,4 @@ class FusionModel(nn.Module):
 
         out = self.classifier(combined)
         return out
+

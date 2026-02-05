@@ -2,7 +2,7 @@ import torch
 from torch.utils.data import DataLoader, Subset
 from sklearn.model_selection import train_test_split
 from dataset import EngagementDataset
-from models.fusion_model_illum import FusionModel
+from models.fusion_model_eff import FusionModel
 
 # 1. Device setup
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
